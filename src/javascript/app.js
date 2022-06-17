@@ -5,77 +5,132 @@ Ext.define("CArABU.app.TSApp", {
     defaults: { margin: 10 },
     layout: 'border',
 
-    items: [
-        {xtype:'container',flex: 1, itemId:'grid_box1', region: 'west'},
-        {xtype:'container',flex: 1, itemId:'grid_box2', region: 'east'}
-    ],
+    items: 
+    [{
+        xtype: 'rallytextfield',
+        id: 'sourceMilestone',
+        fieldLabel: 'Source Milestone ID'
+    },
+    {
+        xtype: 'rallytextfield',
+        id: 'destinationMilestone',
+        fieldLabel: 'Destination Milestone ID'
+    },
+    {
+        xtype: 'rallybutton',
+        text: 'Search',
+        maxHeight: 50,
+        maxHeight: 50,
+        listeners: {
+
+            click: function (record, item, index, e, eOpts) {
+                console.log('item', item)
+                var milestone = item;
+
+                milestone.getCollection('Projects').load({
+                    fetch: ['Name', 'Owner'],
+                    callback: function (records, operation, success) {
+                        console.log('records', records)
+                        var myProjects = [];
+                        Ext.Array.each(records, function (project) {
+                            var projectName = project.get('Name');
+                            myProjects.push({"Name": projectName})
+
+                        });
+                        console.log(myProjects);
+                        // this.showDrillDown(records, "my title");
+                        var store = Ext.create('Rally.data.custom.Store', {
+                            data: myProjects,
+                            pageSize: 2000
+                        });
+                        console.log("store", store)
+
+                        Ext.create('Rally.ui.dialog.Dialog', {
+                            id: 'detailPopup',
+                            title: 'Name',
+                            width: Ext.getBody().getWidth() - 50,
+                            height: Ext.getBody().getHeight() - 50,
+                            closable: true,
+                            layout: 'border',
+                            items: [{
+                                xtype: 'rallygrid',
+                                showRowActionsColumn: false,
+                                columnCfgs: [
+                                    {dataIndex: 'Name'}
+                                ],
+                                store: store,
+                            }]
+                        }).show();
+                    }
+                });
+            }
+        }
+    }],
 
     integrationHeaders : {
         name : "CArABU.app.TSApp"
     },
 
     launch: function () {
-        this.add({
-            xtype: 'rallygrid',
-            columnCfgs: [
-                'FormattedID',
-                'Name',
-                'Projects',
-                'Owner'
-            ],
-            context: this.getContext(),
-            enableEditing: false,
-            showRowActionsColumn: false,
-            storeConfig: {
-                model: 'milestone'
-            },
-            listeners: {
-                // scope: this,
-                itemclick: function (record, item, index, e, eOpts) {
-                    console.log('item', item)
-                    var milestone = item;
+        // this.add({
+        //     xtype: 'rallygrid',
+        //     columnCfgs: [
+        //         'FormattedID',
+        //         'Name',
+        //         'Projects',
+        //         'Owner'
+        //     ],
+        //     context: this.getContext(),
+        //     enableEditing: false,
+        //     showRowActionsColumn: false,
+        //     storeConfig: {
+        //         model: 'milestone'
+        //     },
+        //     // listeners: {
+        //     //     // scope: this,
+        //     //     itemclick: function (record, item, index, e, eOpts) {
+        //     //         console.log('item', item)
+        //     //         var milestone = item;
 
-                    milestone.getCollection('Projects').load({
-                        fetch: ['Name'],
-                        callback: function (records, operation, success) {
-                            console.log('records', records)
-                            var myProjects = [];
-                            Ext.Array.each(records, function (project) {
-                                var projectName = project.get('Name');
-                                myProjects.push(projectName)
-                            });
-                            console.log(myProjects);
-                            // this.showDrillDown(records, "my title");
-                            var store = Ext.create('Rally.data.custom.Store', {
-                                data: myProjects,
-                                pageSize: 2000
-                            });
-                            console.log("store", store)
+        //     //         milestone.getCollection('Projects').load({
+        //     //             fetch: ['Name', 'Owner'],
+        //     //             callback: function (records, operation, success) {
+        //     //                 console.log('records', records)
+        //     //                 var myProjects = [];
+        //     //                 Ext.Array.each(records, function (project) {
+        //     //                     var projectName = project.get('Name');
+        //     //                     myProjects.push({"Name": projectName})
 
-                            Ext.create('Rally.ui.dialog.Dialog', {
-                                id: 'detailPopup',
-                                title: 'Name',
-                                width: Ext.getBody().getWidth() - 50,
-                                height: Ext.getBody().getHeight() - 50,
-                                closable: true,
-                                layout: 'border',
-                                items: [{
-                                    xtype: 'rallygrid',
-                                    columnCfgs: [
-                                        'FormattedID',
-                                        'Name',
-                                        'Owner'
-                                    ],
-                                    storeConfig: {
-                                        model: 'userstory'
-                                    }
-                                }]
-                            }).show();
-                        }
-                    });
-                }
-            }
-        });
+        //     //                 });
+        //     //                 console.log(myProjects);
+        //     //                 // this.showDrillDown(records, "my title");
+        //     //                 var store = Ext.create('Rally.data.custom.Store', {
+        //     //                     data: myProjects,
+        //     //                     pageSize: 2000
+        //     //                 });
+        //     //                 console.log("store", store)
+
+        //     //                 Ext.create('Rally.ui.dialog.Dialog', {
+        //     //                     id: 'detailPopup',
+        //     //                     title: 'Name',
+        //     //                     width: Ext.getBody().getWidth() - 50,
+        //     //                     height: Ext.getBody().getHeight() - 50,
+        //     //                     closable: true,
+        //     //                     layout: 'border',
+        //     //                     items: [{
+        //     //                         xtype: 'rallygrid',
+        //     //                         showRowActionsColumn: false,
+        //     //                         columnCfgs: [
+        //     //                             {dataIndex: 'Name'}
+        //     //                         ],
+        //     //                         store: store,
+        //     //                     }]
+        //     //                 }).show();
+        //     //             }
+        //     //         });
+        //     //     }
+        //     // }
+        // });
     },
 
     _displayGridGivenStore: function(store,field_names){

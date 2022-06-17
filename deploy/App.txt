@@ -3,13 +3,13 @@
 <head>
     <title>CATS-Technical Services App-0.1</title>
     <!--  (c) 2017 CA Technologies.  All Rights Reserved. -->
-    <!--  Build Date: Wed Jun 15 2022 17:10:08 GMT-0400 (Eastern Daylight Time) -->
+    <!--  Build Date: Thu Jun 16 2022 16:18:25 GMT-0400 (Eastern Daylight Time) -->
 
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Wed Jun 15 2022 17:10:08 GMT-0400 (Eastern Daylight Time)";
+        var APP_BUILD_DATE = "Thu Jun 16 2022 16:18:25 GMT-0400 (Eastern Daylight Time)";
         var ARTIFACT = "";
         var BUILDER  = "richardshipe";
-        var CHECKSUM = 3595438597;
+        var CHECKSUM = 3592434027;
     </script>
 
     <script type="text/javascript" src="/apps/2.1/sdk.js"></script>
@@ -332,10 +332,8 @@ Ext.define("CArABU.app.TSApp", {
     defaults: { margin: 10 },
     layout: 'border',
 
-    items: [
-        {xtype:'container',flex: 1, itemId:'grid_box1', region: 'west'},
-        {xtype:'container',flex: 1, itemId:'grid_box2', region: 'east'}
-    ],
+    // items: [
+    // ],
 
     integrationHeaders : {
         name : "CArABU.app.TSApp"
@@ -363,13 +361,15 @@ Ext.define("CArABU.app.TSApp", {
                     var milestone = item;
 
                     milestone.getCollection('Projects').load({
-                        fetch: ['Name'],
+                        fetch: ['Name', 'Owner'],
                         callback: function (records, operation, success) {
                             console.log('records', records)
                             var myProjects = [];
                             Ext.Array.each(records, function (project) {
                                 var projectName = project.get('Name');
-                                myProjects.push(projectName)
+                                var projectOwner = project.get('Owner._refObjectName');
+                                myProjects.push({"Name": projectName}, {"Owner": projectOwner})
+
                             });
                             console.log(myProjects);
                             // this.showDrillDown(records, "my title");
@@ -388,14 +388,12 @@ Ext.define("CArABU.app.TSApp", {
                                 layout: 'border',
                                 items: [{
                                     xtype: 'rallygrid',
+                                    showRowActionsColumn: false,
                                     columnCfgs: [
-                                        'FormattedID',
-                                        'Name',
-                                        'Owner'
+                                        {dataIndex: 'Name',
+                                        dataIndex: 'Owner'},
                                     ],
-                                    storeConfig: {
-                                        model: 'userstory'
-                                    }
+                                    store: store,
                                 }]
                             }).show();
                         }
